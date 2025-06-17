@@ -10,26 +10,31 @@
       font-size: 24pt; /* 24ポイント */
       font-family: "Yu Mincho", serif;
       line-height: 1.6;
-      padding: 40px;
+      padding: 80px 40px; /* 上部の余白を増やし、文字が落ちる開始点を見やすく */
       overflow: hidden; /* 落下する文字がスクロールバーを出さないように */
+      display: flex; /* 中央寄せのためにflexboxを使う */
+      justify-content: center; /* 水平方向の中央寄せ */
+      align-items: flex-start; /* 垂直方向の上寄せ */
+      min-height: 100vh; /* 画面いっぱいに広げる */
+      box-sizing: border-box; /* paddingをwidth/heightに含める */
     }
 
     .story {
-      text-align: justify; /* 必要であれば文字の均等配置 */
+      max-width: 800px; /* 適度な幅に制限して見やすく */
+      text-align: left; /* 上部から崩れるため左寄せに */
     }
 
     .story span {
       display: inline-block;
       position: relative; /* transformの基準点 */
-      transition: transform 2s ease-out; /* 落下時間を長くし、減速感を出す。opacityは削除 */
+      transition: transform 1.5s ease-in, opacity 1.5s ease-in; /* 落下時間を短くし、勢いを出す */
       will-change: transform, opacity; /* アニメーションのパフォーマンス改善 */
-      /* 初期はopacity: 1; なので、特に指定しない */
     }
 
     .falling {
-      /* 画面下部 (80vh) で停止し、左右にブレながら落ちる */
-      transform: translateY(80vh) rotateZ(calc(30deg * var(--random-rotation))) translateX(calc(100px * var(--random-x)));
-      /* opacity は 1 のまま */
+      /* 画面中央よりやや下で停止し、左右に大きくブレながら落ちる */
+      transform: translateY(60vh) rotateZ(calc(90deg * var(--random-rotation))) translateX(calc(200px * var(--random-x)));
+      opacity: 1; /* 色は黒のまま */
     }
   </style>
 </head>
@@ -56,26 +61,38 @@
       storyContainer.appendChild(span);
     }
 
-    // 3秒後に一点から崩れ落ち始める
+    // 3秒後にアニメーション開始
     setTimeout(() => {
       const spans = Array.from(document.querySelectorAll(".story span"));
-      const totalSpans = spans.length;
-      const centerIndex = Math.floor(totalSpans / 2); // 文章の中央を基準点とする
+      
+      // 基準となる開始点 (今回は最初の文字の位置を基準とします)
+      // 文字の初期位置を取得するために一度レンダリングを待つ
+      requestAnimationFrame(() => {
+        const startRect = spans[0].getBoundingClientRect();
+        const startX = startRect.left;
+        const startY = startRect.top;
 
-      spans.forEach((span, index) => {
-        // 中央からの距離に基づいて遅延時間を計算
-        // 中央に近いほど早く、遠いほど遅く落ち始める
-        const distance = Math.abs(index - centerIndex);
-        const delayFactor = distance * 50; // 50msごとに遅延時間を増やしていく
+        spans.forEach((span, index) => {
+          const charRect = span.getBoundingClientRect();
+          const charX = charRect.left;
+          const charY = charRect.top;
 
-        const randomRotation = Math.random() * 2 - 1; // -1から1のランダムな値
-        const randomX = Math.random() * 2 - 1; // -1から1のランダムな値
-        span.style.setProperty('--random-rotation', randomRotation);
-        span.style.setProperty('--random-x', randomX);
+          // 開始点からのユークリッド距離を計算
+          const distance = Math.sqrt(Math.pow(charX - startX, 2) + Math.pow(charY - startY, 2));
 
-        setTimeout(() => {
-          span.classList.add("falling");
-        }, delayFactor); // 中央からの距離に応じた遅延
+          // 距離に基づいて遅延時間を計算 (ミリ秒)
+          // 距離が近いほど早く、遠いほど遅く落ち始める
+          const delay = distance * 5; // 距離1pxあたり5msの遅延
+
+          const randomRotation = Math.random() * 2 - 1; // -1から1のランダムな値 (回転を大きく)
+          const randomX = Math.random() * 2 - 1; // -1から1のランダムな値 (左右のブレを大きく)
+          span.style.setProperty('--random-rotation', randomRotation);
+          span.style.setProperty('--random-x', randomX);
+
+          setTimeout(() => {
+            span.classList.add("falling");
+          }, delay);
+        });
       });
     }, 3000); // 最初の3秒待機
   </script>
