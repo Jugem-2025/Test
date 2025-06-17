@@ -21,12 +21,12 @@
     .story span {
       display: inline-block;
       position: relative; /* transformの基準点 */
-      transition: transform 1s ease-in, opacity 1s ease-in; /* 落下の動きをease-inに */
+      transition: transform 1.2s ease-in, opacity 1.2s ease-in; /* 少し時間を長く */
       will-change: transform, opacity; /* アニメーションのパフォーマンス改善 */
     }
 
     .falling {
-      transform: translateY(200vh) rotateZ(30deg); /* 画面下まで大きく落下 */
+      transform: translateY(150vh) rotateZ(calc(30deg * var(--random-rotation))) translateX(calc(50px * var(--random-x)));
       opacity: 0;
     }
   </style>
@@ -58,6 +58,10 @@
     setTimeout(() => {
       const spans = Array.from(document.querySelectorAll(".story span"));
       spans.forEach((span, index) => {
+        const randomRotation = Math.random() * 2 - 1; // -1から1のランダムな値
+        const randomX = Math.random() * 2 - 1; // -1から1のランダムな値
+        span.style.setProperty('--random-rotation', randomRotation);
+        span.style.setProperty('--random-x', randomX);
         setTimeout(() => {
           span.classList.add("falling");
         }, Math.random() * 2500); // 0〜2.5秒ランダムで落下開始タイミングを調整
