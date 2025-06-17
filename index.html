@@ -21,13 +21,14 @@
     .story span {
       display: inline-block;
       position: relative; /* transformの基準点 */
-      transition: transform 1.2s ease-in, opacity 1.2s ease-in; /* 少し時間を長く */
+      transition: transform 2s ease-out, opacity 2s ease-out; /* 落下時間を長くし、減速感を出す */
       will-change: transform, opacity; /* アニメーションのパフォーマンス改善 */
     }
 
     .falling {
-      transform: translateY(150vh) rotateZ(calc(30deg * var(--random-rotation))) translateX(calc(50px * var(--random-x)));
-      opacity: 0;
+      /* 画面下部 (80vh) で停止し、左右にブレながら落ちる */
+      transform: translateY(80vh) rotateZ(calc(30deg * var(--random-rotation))) translateX(calc(100px * var(--random-x)));
+      opacity: 0.1; /* 薄く残る */
     }
   </style>
 </head>
