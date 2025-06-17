@@ -5,9 +5,9 @@
   <title>わしちゃんとしわちゃんの冒険</title>
   <style>
     body {
-      background-color: #CC0000; /* 赤に変更（元の#5a1e1eでも可） */
+      background-color: #CC0000; /* 赤 */
       color: black; /* 黒 */
-      font-size: 24pt; /* 24ポイントにさらに大きく */
+      font-size: 24pt; /* 24ポイント */
       font-family: "Yu Mincho", serif;
       line-height: 1.6;
       padding: 40px;
@@ -21,14 +21,15 @@
     .story span {
       display: inline-block;
       position: relative; /* transformの基準点 */
-      transition: transform 2s ease-out, opacity 2s ease-out; /* 落下時間を長くし、減速感を出す */
+      transition: transform 2s ease-out; /* 落下時間を長くし、減速感を出す。opacityは削除 */
       will-change: transform, opacity; /* アニメーションのパフォーマンス改善 */
+      /* 初期はopacity: 1; なので、特に指定しない */
     }
 
     .falling {
       /* 画面下部 (80vh) で停止し、左右にブレながら落ちる */
       transform: translateY(80vh) rotateZ(calc(30deg * var(--random-rotation))) translateX(calc(100px * var(--random-x)));
-      opacity: 0.1; /* 薄く残る */
+      /* opacity は 1 のまま */
     }
   </style>
 </head>
@@ -55,17 +56,26 @@
       storyContainer.appendChild(span);
     }
 
-    // 3秒後にランダムに崩れ落ちていく
+    // 3秒後に一点から崩れ落ち始める
     setTimeout(() => {
       const spans = Array.from(document.querySelectorAll(".story span"));
+      const totalSpans = spans.length;
+      const centerIndex = Math.floor(totalSpans / 2); // 文章の中央を基準点とする
+
       spans.forEach((span, index) => {
+        // 中央からの距離に基づいて遅延時間を計算
+        // 中央に近いほど早く、遠いほど遅く落ち始める
+        const distance = Math.abs(index - centerIndex);
+        const delayFactor = distance * 50; // 50msごとに遅延時間を増やしていく
+
         const randomRotation = Math.random() * 2 - 1; // -1から1のランダムな値
         const randomX = Math.random() * 2 - 1; // -1から1のランダムな値
         span.style.setProperty('--random-rotation', randomRotation);
         span.style.setProperty('--random-x', randomX);
+
         setTimeout(() => {
           span.classList.add("falling");
-        }, Math.random() * 2500); // 0〜2.5秒ランダムで落下開始タイミングを調整
+        }, delayFactor); // 中央からの距離に応じた遅延
       });
     }, 3000); // 最初の3秒待機
   </script>
