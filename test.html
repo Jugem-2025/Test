@@ -6,28 +6,34 @@
   <style>
     body {
       background-color: #5a1e1e; /* 暗い赤 */
-      color: black;
-      font-size: 11pt;
+      color: black; /* 黒 */
+      font-size: 11pt; /* 11ポイント */
       font-family: "Yu Mincho", serif;
       line-height: 1.6;
       padding: 40px;
+      overflow: hidden; /* 落下する文字がスクロールバーを出さないように */
+    }
+
+    .story {
+      text-align: justify; /* 必要であれば文字の均等配置 */
     }
 
     .story span {
       display: inline-block;
-      transition: transform 1s ease, opacity 1s ease;
+      position: relative; /* transformの基準点 */
+      transition: transform 1s ease-in, opacity 1s ease-in; /* 落下の動きをease-inに */
+      will-change: transform, opacity; /* アニメーションのパフォーマンス改善 */
     }
 
     .falling {
-      transform: translateY(100px) rotateZ(20deg);
+      transform: translateY(200vh) rotateZ(30deg); /* 画面下まで大きく落下 */
       opacity: 0;
     }
   </style>
 </head>
 <body>
   <div class="story" id="story">
-    <!-- ここに文字ごとに分割された文章が入ります -->
-  </div>
+    </div>
 
   <script>
     // サンプル文章（80文字）
@@ -48,9 +54,9 @@
       spans.forEach((span, index) => {
         setTimeout(() => {
           span.classList.add("falling");
-        }, Math.random() * 3000); // 0〜3秒ランダムで落下
+        }, Math.random() * 2500); // 0〜2.5秒ランダムで落下開始タイミングを調整
       });
-    }, 3000);
+    }, 3000); // 最初の3秒待機
   </script>
 </body>
 </html>
