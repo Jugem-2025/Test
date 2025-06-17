@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <title>わしちゃんとしわちゃんの冒険</title>
+  <style>
+    body {
+      background-color: #5a1e1e; /* 暗い赤 */
+      color: black; /* 黒 */
+      font-size: 11pt; /* 11ポイント */
+      font-family: "Yu Mincho", serif;
+      line-height: 1.6;
+      padding: 40px;
+      overflow: hidden; /* 落下する文字がスクロールバーを出さないように */
+    }
+
+    .story {
+      text-align: justify; /* 必要であれば文字の均等配置 */
+    }
+
+    .story span {
+      display: inline-block;
+      position: relative; /* transformの基準点 */
+      transition: transform 1s ease-in, opacity 1s ease-in; /* 落下の動きをease-inに */
+      will-change: transform, opacity; /* アニメーションのパフォーマンス改善 */
+    }
+
+    .falling {
+      transform: translateY(200vh) rotateZ(30deg); /* 画面下まで大きく落下 */
+      opacity: 0;
+    }
+  </style>
+</head>
+<body>
+  <div class="story" id="story">
+    </div>
+
+  <script>
+    // サンプル文章（80文字）
+    const text = `わしちゃんとしわちゃんは、風に導かれて森を進み、忘れかけた夢を取り戻した。`;
+
+    const storyContainer = document.getElementById("story");
+
+    // 一文字ずつspanにして挿入
+    for (let char of text) {
+      const span = document.createElement("span");
+      span.textContent = char;
+      storyContainer.appendChild(span);
+    }
+
+    // 3秒後にランダムに崩れ落ちていく
+    setTimeout(() => {
+      const spans = Array.from(document.querySelectorAll(".story span"));
+      spans.forEach((span, index) => {
+        setTimeout(() => {
+          span.classList.add("falling");
+        }, Math.random() * 2500); // 0〜2.5秒ランダムで落下開始タイミングを調整
+      });
+    }, 3000); // 最初の3秒待機
+  </script>
+</body>
+</html>
